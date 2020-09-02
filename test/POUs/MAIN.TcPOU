@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
+  <POU Name="MAIN" Id="{a967ae7f-2447-4741-99c2-9f2a87c804ab}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	
+	//Example implementation of an arbiter
+    g_fbArbiter1    :   FB_Arbiter(1);
+	// fbArbiterIO : FB_SubSysToArbiter_IO;
+	  fbArbiterIO : FB_DummyArbIO;
+ bTrans:BOOL;
+ bClose:BOOL;
+ bOpen:BOOL;
+ bRemove:bool;
+ ID:DWORD;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+//FFO
+g_FastFaultOutput1.Execute(bAutoReset:=TRUE);
+g_FastFaultOutput2.Execute(bAutoReset:=TRUE);
+
+
+
+g_fbArbiter1.ElevateRequest(fbArbiterIO);
+//
+bTrans:= g_fbArbiter1.CheckRequestInPool(1002);//TransitionID
+bClose:= g_fbArbiter1.CheckRequestInPool(1000);//Assertion Closed ID
+bOpen:= g_fbArbiter1.CheckRequestInPool(1001);//Assertion Open ID
+if (bRemove) THEN
+	g_fbArbiter1.RemoveRequest(ID);
+END_IF
+//fbArbiterIO(Arbiter := g_fbArbiter1, fbFFHWO := g_FastFaultOutput1);
+//valves
+FEE_VGC_02(
+	i_stUSG:= FEE_KMONO_GCC_01.IG, 
+	i_stDSG:= FEE_KMONO_GCC_01.IG , 
+	i_xDis_DPIlk:= FALSE,
+	i_xEPS_OK :=TRUE,
+	//i_xEPS_OPN_OK:= , 
+	//i_xEPS_CLS_OK:= ,
+	i_xPMPS_OK:= , 
+	i_xExt_OK:= TRUE, 
+	i_xOverrideMode:= , 
+	i_xReset:= ,
+	iq_stValve=>,
+	xMPS_OK=> , 
+	io_fbFFHWO:= g_FastFaultOutput1,
+fbArbiter:= g_fbArbiter1,
+i_nTransitionRootID:=1000 );
+
+
+
+
+
+
+// gauges interlocking VGC_02 using the same gauge for the purpose of this test
+FEE_KMONO_GPI_01(PG=>);
+FEE_KMONO_GCC_01(PG:=FEE_KMONO_GPI_01.PG);
+
+// Following are function block for the rest of the beamline devices
+FEE_KMONO_PIP_01(i_stGauge:= FEE_KMONO_GPI_01.PG);
+FEE_GPI_03(PG=>);
+FEE_GCC_03(PG:=FEE_KMONO_GPI_01.PG);
+
+FEE_PIP_02(i_stGauge:= FEE_GCC_03.IG);
+
+FEE_M1L_GPI_01(PG=>);
+FEE_M1L_GCC_01(PG:=FEE_M1L_GPI_01.PG);
+FEE_M1L_PIP_01(i_stGauge:= FEE_M1L_GCC_01.IG);
+
+FEE_GPI_04(PG=>);
+FEE_GCC_04(PG:=FEE_GPI_04.PG);
+FEE_PIP_03(i_stGauge:= FEE_GCC_04.IG);
+
+
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

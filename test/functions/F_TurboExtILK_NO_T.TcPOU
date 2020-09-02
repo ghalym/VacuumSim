@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
+  <POU Name="F_TurboExtILK_NO_T" Id="{eba4edcd-3a9e-447d-af76-7c663b1de079}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_TurboExtILK_NO_T : BOOL
+VAR_INPUT
+	Turbo		:	ST_PTM;
+	BackingGauge:	ST_VG;
+	InletGauge	:	ST_VG;
+	VentValve	:	ST_VCC_NO; //NO type turbo valve
+	ScrollPump	:	ST_RoughPump;
+END_VAR
+VAR
+	Timer :TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
