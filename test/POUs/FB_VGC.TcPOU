@@ -65,6 +65,7 @@ VAR
 	bMoving : BOOL;
 	bDone :BOOL;
 	tBPTMtimeout:TON;
+	 i_nRequestedAssertionID:DWORD;
 	bptm: BeamParameterTransitionManager;  
 	FFO    :    FB_FastFault :=(
         i_DevName := 'VGC',
@@ -458,20 +459,26 @@ If (i_xIsAperture ) OR (iq_stValve.pv_xOPN_SW )THEN
 	bptm.i_stRequestedAssertion := PMPS_GVL.cstFullBeam;
 ELSE  bptm.i_stRequestedAssertion := PMPS_GVL.cstSafeBeam;
 END_IF
+i_nRequestedAssertionID:= i_nTransitionRootID+ BOOL_TO_UDINT( iq_stValve.pv_xOPN_SW);
 bptm(fbArbiter:=fbArbiter,
-     i_TransitionAssertionID:=i_nTransitionRootID+2,
+     i_TransitionAssertionID:=i_nTransitionRootID,
      i_stTransitionAssertion:=PMPS_GVL.cstSafeBeam,
-     i_nRequestedAssertionID:=i_nTransitionRootID+ BOOL_TO_UDINT( iq_stValve.pv_xOPN_SW),
+     i_nRequestedAssertionID:=i_nRequestedAssertionID,//i_nTransitionRootID+ BOOL_TO_UDINT( iq_stValve.pv_xOPN_SW),
      i_stRequestedAssertion:=,
-     i_xMoving:=bMoving,
+     i_xMoving:=,//bMoving,
      i_xDoneMoving:= bDone,
      stCurrentBeamParameters:=PMPS_GVL.stCurrentBeamParameters,
      q_xTransitionAuthorized=>);
 // Timeout
-tBPTMtimeout(IN:= bMoving AND NOT bptm.q_xTransitionAuthorized , PT:=T#1S);
+tBPTMtimeout(IN:= bMoving AND NOT bptm.q_xTransitionAuthorized , PT:=T#2S);
 //xPMPS_OK := bptm.q_xTransitionAuthorized OR tBPTMtimeout.Q;
 //xPMPS_OK := i_xPMPS_OK OR (bptm.q_xTransitionAuthorized OR tBPTMtimeout.Q); // Moved to FB, move it back after testing
-	 ]]></ST>
+
+//Timeout and clear request
+IF (tBPTMtimeout.Q) THEN
+	fbArbiter.RemoveRequest(bptm.i_TransitionAssertionID);
+	fbArbiter.RemoveRequest(bptm.i_nRequestedAssertionID);
+END_IF]]></ST>
       </Implementation>
     </Action>
     <Action Name="ACT_ResetAlarms" Id="{9a7577da-26b2-495c-9589-68c6c7e48602}">
