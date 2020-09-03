@@ -11,9 +11,13 @@ VAR
 
 
 	(*Valves*)
+	fb_VGC_01 : FB_VacuumValve;
 	fb_VGC_02 : FB_VacuumValve;
 	fb_VGC_03 : FB_VacuumValve;
 	fb_VGC_04 : FB_VacuumValve;
+	fb_VGC_05 : FB_VacuumValve;
+	fb_VGC_06 : FB_VacuumValve;
+
 	
 	
 	(*Gauges*)
@@ -49,28 +53,39 @@ fb_VGC_1(stAVol:=stVl_Start ,
 
 fb_VGC_2(stAVol:=stVl_Start , 
 	stBVol:= stVl_KMONO,
-	stValve:= VGC_2
+	stValve:= S_FEE_VGC_02
 	);
 fb_VGC_W(stAVol:=stVl_Start , 
 	stBVol:= stVl_KMONO,
 	stValve:= VGC_W
 	);
 
-
+fb_VGC_01(stAVol:=stVl_Start , 
+	stBVol:= stVl_KMONO,
+	stValve:= PMPS_VGC_01
+	);
 
 fb_VGC_02(stAVol:=stVl_Start , 
 	stBVol:= stVl_KMONO,
-	stValve:= S_FEE_VGC_02
+	stValve:= PMPS_VGC_02
 	);
 	
 fb_VGC_03(stAVol:= stVl_KMONO, 
 	stBVol:= stVl_M1L0,
-	stValve:= S_FEE_VGC_03
+	stValve:= PMPS_VGC_03
 	);	
 	
 fb_VGC_04(stAVol:= stVl_M1L0, 
 	stBVol:= stVl_End,
-	stValve:= S_FEE_VGC_04
+	stValve:= PMPS_VGC_04
+	);	
+fb_VGC_05(stAVol:= stVl_M1L0, 
+	stBVol:= stVl_End,
+	stValve:= PMPS_VGC_05
+	);	
+fb_VGC_06(stAVol:= stVl_M1L0, 
+	stBVol:= stVl_End,
+	stValve:= PMPS_VGC_06
 	);	
 	
 

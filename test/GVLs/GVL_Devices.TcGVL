@@ -67,6 +67,13 @@
 	'}
 	//FEE_VGC_04: FB_VGC_FFO;
 	
+	PMPS_VGC_01: FB_VGC;
+	PMPS_VGC_02: FB_VGC;
+	PMPS_VGC_03: FB_VGC;
+	PMPS_VGC_04: FB_VGC;
+	PMPS_VGC_05: FB_VGC;
+	PMPS_VGC_06: FB_VGC;
+	
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

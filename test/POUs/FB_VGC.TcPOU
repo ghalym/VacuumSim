@@ -459,11 +459,11 @@ If (i_xIsAperture ) OR (iq_stValve.pv_xOPN_SW )THEN
 	bptm.i_stRequestedAssertion := PMPS_GVL.cstFullBeam;
 ELSE  bptm.i_stRequestedAssertion := PMPS_GVL.cstSafeBeam;
 END_IF
-i_nRequestedAssertionID:= i_nTransitionRootID+ BOOL_TO_UDINT( iq_stValve.pv_xOPN_SW);
+
 bptm(fbArbiter:=fbArbiter,
-     i_TransitionAssertionID:=i_nTransitionRootID,
+     i_TransitionAssertionID:=i_nTransitionRootID+2,
      i_stTransitionAssertion:=PMPS_GVL.cstSafeBeam,
-     i_nRequestedAssertionID:=i_nRequestedAssertionID,//i_nTransitionRootID+ BOOL_TO_UDINT( iq_stValve.pv_xOPN_SW),
+     i_nRequestedAssertionID:=i_nTransitionRootID+ BOOL_TO_UDINT( iq_stValve.pv_xOPN_SW),
      i_stRequestedAssertion:=,
      i_xMoving:=,//bMoving,
      i_xDoneMoving:= bDone,
