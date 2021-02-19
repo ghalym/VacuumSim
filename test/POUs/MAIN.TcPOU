@@ -6,6 +6,8 @@ VAR
 	
 	//Example implementation of an arbiter
     g_fbArbiter1    :   FB_Arbiter(1);
+	 //g_fbArbiter2    :   FB_Arbiter(2);
+	 // g_fbArbiter3    :   FB_Arbiter(3);
 	//fbArbiterIO : FB_SubSysToArbiter_IO;
 	  fbArbiterIO : FB_DummyArbIO;
  bTransC:BOOL;
@@ -13,29 +15,104 @@ VAR
  bClose:BOOL;
  bOpen:BOOL;
  bRemove:bool;
+
+  bTrans2:BOOL;
+ bClose2:BOOL;
+ bOpen2:BOOL;
  ID:DWORD;
+ 
+ //////////////////
+ VFS_Interface:FB_VFS_Interface;
+ VFS: FB_VFS;
+  VFS2: FB_VFS;
+ VGC_2S: FB_VGC_2S;
+	xFirstPass: BOOL := TRUE;
+	// For Persistent Data
+	fbWritePersistentData           : WritePersistentData;
+	rTempUpperLimit	:	REAL:=0;
+	
+	 PROFILER1     :PROFILER;
+    ProfilerData  :PROFILERSTRUCT;
+    a             :LREAL;
+END_VAR
+
+VAR PERSISTENT
+    bSaved: BOOL;
+    rUpperLimit	:	REAL;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[
+      <ST><![CDATA[(*On first PLC pass, load the persistent value into the structrue variable*)
+IF (xFirstPass) THEN
+	xFirstPass	:= FALSE;
+	rTempUpperLimit := rUpperLimit;
+END_IF
+(*Check if a new value has been written in the structure variable copy it to the persistent variable*)
+IF NOT (rTempUpperLimit= rUpperLimit) THEN
+	rUpperLimit := rTempUpperLimit;
+	//fbWritePersistentData(NETID:='', PORT:=851, START:=TRUE, TMOUT:=T#1s );
+ELSE
+     //fbWritePersistentData( START:=FALSE);
+END_IF;
+
+//rTempUpperLimit:=rTempUpperLimit+1;
+
+PROFILER1(START := fbWritePersistentData.BUSY);
+
+
+
 //FFO
 g_FastFaultOutput1.Execute(bAutoReset:=TRUE);
+
+//testing fast shutter
+//VFS(i_xPMPS_OK:=TRUE , i_xExt_OK:=TRUE , i_sDevName:='vfs' , io_fbFFHWO:= g_FastFaultOutput1);
+VFS_Interface(IG:= FEE_KMONO_GCC_01.IG , Veto_Valve:= VGC_2S.iq_stValve , iq_stValve=> , i_xVAC_FAULT_OK=> );
+VFS(
+	i_xPMPS_OK:= TRUE, 
+	i_xExt_OK:= TRUE, 
+	i_sDevName:= 'vfs', 
+	i_xVeto_Enable:= TRUE, 
+	io_fbFFHWO:= g_FastFaultOutput1 );
+VGC_2S(
+	i_stUSG:=  FEE_KMONO_GCC_01.IG, 
+	i_stDSG:=  FEE_KMONO_GCC_01.IG, 
+	i_xDis_DPIlk:= FALSE, 
+	i_xPMPS_OK:= TRUE, 
+	i_xEPS_OK:= TRUE, 
+	i_xExt_OK:= TRUE, 
+	i_xOverrideMode:= , 
+	i_xReset:= , 
+	i_xIsAperture:= FALSE, 
+	i_sDevName:= 'DEV', 
+	i_nTransitionRootID:=13 , 
+	iq_stValve=> , 
+	xMPS_OK=> , 
+	io_fbFFHWO:= g_FastFaultOutput1, 
+	fbArbiter:= g_fbArbiter1);
+
+
+
+
+//testing pmps
 g_FastFaultOutput2.Execute(bAutoReset:=TRUE);
 
-
-
-//g_fbArbiter1.ElevateRequest(fbArbiterIO);
 //
 //bTransC:= g_fbArbiter1.CheckRequestInPool(1010);//TransitionID
 bTrans:= g_fbArbiter1.CheckRequestInPool(ID+2);//TransitionID
 bClose:= g_fbArbiter1.CheckRequestInPool(ID);//Assertion Closed ID
 bOpen:= g_fbArbiter1.CheckRequestInPool(ID+1);//Assertion Open ID
+(*
+bTrans2:= g_fbArbiter2.CheckRequestInPool(ID+2);//TransitionID
+bClose2:= g_fbArbiter2.CheckRequestInPool(ID);//Assertion Closed ID
+bOpen2:= g_fbArbiter2.CheckRequestInPool(ID+1);//Assertion Open ID*)
 if (bRemove) THEN
 	g_fbArbiter1.RemoveRequest(ID);
 END_IF
 
 //PMPS_GVL.stCurrentBeamParameters:= PMPS_GVL.cstFullBeam;// g_fbArbiter1.q_stBeamParams;
-fbArbiterIO(LA := g_fbArbiter1, FFO := g_FastFaultOutput1);
+fbArbiterIO.AutoUpdateBP:=TRUE;
+fbArbiterIO(LA := g_fbArbiter1, FFO := g_FastFaultOutput1, q_stSimulatedBPReadback => PMPS_GVL.stCurrentBeamParameters);
+//g_fbArbiter1.ElevateRequest(g_fbArbiter2);
 //valves
 FEE_VGC_02(
 	i_stUSG:= FEE_KMONO_GCC_01.IG, 
@@ -155,9 +232,73 @@ PMPS_VGC_06(
 fbArbiter:= g_fbArbiter1,
 i_nTransitionRootID:=6000 );
 
+PMPS_VGC_08(
+	i_stUSG:= FEE_KMONO_GCC_01.IG, 
+	i_stDSG:= FEE_KMONO_GCC_01.IG , 
+	i_xDis_DPIlk:= FALSE,
+	i_xEPS_OK :=TRUE,
+	//i_xEPS_OPN_OK:= , 
+	//i_xEPS_CLS_OK:= ,
+	i_xPMPS_OK:= , 
+	i_xExt_OK:= TRUE, 
+	i_xOverrideMode:= , 
+	i_xReset:= ,
+	iq_stValve=>,
+	xMPS_OK=> , 
+	io_fbFFHWO:= g_FastFaultOutput1,
+fbArbiter:= g_fbArbiter1,
+i_nTransitionRootID:=8000 );
 
+PMPS_VGC_09(
+	i_stUSG:= FEE_KMONO_GCC_01.IG, 
+	i_stDSG:= FEE_KMONO_GCC_01.IG , 
+	i_xDis_DPIlk:= FALSE,
+	i_xEPS_OK :=TRUE,
+	//i_xEPS_OPN_OK:= , 
+	//i_xEPS_CLS_OK:= ,
+	i_xPMPS_OK:= , 
+	i_xExt_OK:= TRUE, 
+	i_xOverrideMode:= , 
+	i_xReset:= ,
+	iq_stValve=>,
+	xMPS_OK=> , 
+	io_fbFFHWO:= g_FastFaultOutput1,
+fbArbiter:= g_fbArbiter1,
+i_nTransitionRootID:=9000 );
 
-
+PMPS_VGC_10(
+	i_stUSG:= FEE_KMONO_GCC_01.IG, 
+	i_stDSG:= FEE_KMONO_GCC_01.IG , 
+	i_xDis_DPIlk:= FALSE,
+	i_xEPS_OK :=TRUE,
+	//i_xEPS_OPN_OK:= , 
+	//i_xEPS_CLS_OK:= ,
+	i_xPMPS_OK:= , 
+	i_xExt_OK:= TRUE, 
+	i_xOverrideMode:= , 
+	i_xReset:= ,
+	iq_stValve=>,
+	xMPS_OK=> , 
+	io_fbFFHWO:= g_FastFaultOutput1,
+fbArbiter:= g_fbArbiter1,
+i_nTransitionRootID:=10000 );
+(*
+PMPS_VGC_11(
+	i_stUSG:= FEE_KMONO_GCC_01.IG, 
+	i_stDSG:= FEE_KMONO_GCC_01.IG , 
+	i_xDis_DPIlk:= FALSE,
+	i_xEPS_OK :=TRUE,
+	//i_xEPS_OPN_OK:= , 
+	//i_xEPS_CLS_OK:= ,
+	i_xPMPS_OK:= , 
+	i_xExt_OK:= TRUE, 
+	i_xOverrideMode:= , 
+	i_xReset:= ,
+	iq_stValve=>,
+	xMPS_OK=> , 
+	io_fbFFHWO:= g_FastFaultOutput1,
+fbArbiter:= g_fbArbiter2,
+i_nTransitionRootID:=11000 );*)
 
 
 
@@ -180,7 +321,8 @@ FEE_GPI_04(PG=>);
 FEE_GCC_04(PG:=FEE_GPI_04.PG);
 FEE_PIP_03(i_stGauge:= FEE_GCC_04.IG);
 
-
+//PTM
+PTM_Agilent(I_xExtIlkOk := TRUE, i_stGauge:= FEE_GPI_04.PG, i_rMaxBackingPressure := 2);
 ]]></ST>
     </Implementation>
   </POU>

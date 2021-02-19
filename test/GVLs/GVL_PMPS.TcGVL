@@ -3,6 +3,7 @@
   <GVL Name="GVL_PMPS" Id="{9e788d78-e75a-4750-84fb-014afc2fe214}">
     <Declaration><![CDATA[
 VAR_GLOBAL
+	 g_FastFaultOutput3  :   FB_HardwareFFOutput;
 	
 {attribute 'pytmc' := '
     pv: PLC:TST:FF1

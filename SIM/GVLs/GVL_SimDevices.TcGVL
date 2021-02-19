@@ -88,7 +88,29 @@
 		q_xClsLS := TRUE,
 		q_xOpnLS := FALSE
 	);
-
+	
+PMPS_VGC_08 : ST_VacuumValve:=(
+		q_xClsLS := TRUE,
+		q_xOpnLS := FALSE
+	);
+PMPS_VGC_09 : ST_VacuumValve:=(
+		q_xClsLS := TRUE,
+		q_xOpnLS := FALSE
+	);
+	
+PMPS_VGC_10 : ST_VacuumValve:=(
+		q_xClsLS := TRUE,
+		q_xOpnLS := FALSE
+	);
+PMPS_VGC_11 : ST_VacuumValve:=(
+		q_xClsLS := TRUE,
+		q_xOpnLS := FALSE
+	);
+	
+	VGC_2S : ST_VacuumValve:=(
+		q_xClsLS := TRUE,
+		q_xOpnLS := FALSE
+	);
 
 (*Gauges*)
 	S_FEE_KMONO_GPI_01 : ST_MKS_275 :=(

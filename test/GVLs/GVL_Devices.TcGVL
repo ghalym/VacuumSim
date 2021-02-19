@@ -74,6 +74,15 @@
 	PMPS_VGC_05: FB_VGC;
 	PMPS_VGC_06: FB_VGC;
 	
+	PMPS_VGC_08: FB_VGC;
+	PMPS_VGC_09: FB_VGC;
+	
+	PMPS_VGC_10: FB_VGC;
+	PMPS_VGC_11: FB_VGC;
+	
+	PTM_Agilent: FB_PTM_Agilent; 
+			
+	
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

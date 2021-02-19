@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.3">
-  <POU Name="FB_VGC" Id="{c11ab03e-606b-4cce-9b4d-159d1fcd34a6}" SpecialFunc="None">
+  <POU Name="FB_VGC_tst" Id="{c11ab03e-606b-4cce-9b4d-159d1fcd34a6}" SpecialFunc="None">
     <Declaration><![CDATA[(* This function block implements basic functionality for Isolation Gate Valves*)
 (* This function block interlock is as follows:
 1. The valve can be opened when the difference between the pressures on both sides is
@@ -10,7 +10,7 @@ less than the maximum differential pressure.
 (*This function block also implements PMPS and EPS interlocks, as well as Fast MPS trigger*)
 {attribute 'no_check'}
 {attribute 'reflection'} 
-FUNCTION_BLOCK FB_VGC Extends FB_Valve
+FUNCTION_BLOCK FB_VGC_tst Extends FB_Valve
 VAR_IN_OUT
 	
 END_VAR
@@ -108,7 +108,7 @@ VAR
     
     // For logging
     eVGCPrevState : E_VGC;
-   
+ 
 	
 END_VAR]]></Declaration>
     <Implementation>
@@ -470,7 +470,7 @@ bptm(fbArbiter:=fbArbiter,
      stCurrentBeamParameters:=PMPS_GVL.stCurrentBeamParameters,
      q_xTransitionAuthorized=>);
 // Timeout
-tBPTMtimeout(IN:= bMoving AND NOT bptm.q_xTransitionAuthorized , PT:=T#2S);
+tBPTMtimeout(IN:= bMoving AND NOT bptm.q_xTransitionAuthorized, PT:=T#2S);
 //xPMPS_OK := bptm.q_xTransitionAuthorized OR tBPTMtimeout.Q;
 //xPMPS_OK := i_xPMPS_OK OR (bptm.q_xTransitionAuthorized OR tBPTMtimeout.Q); // Moved to FB, move it back after testing
 

@@ -17,6 +17,10 @@ VAR
 	fb_VGC_04 : FB_VacuumValve;
 	fb_VGC_05 : FB_VacuumValve;
 	fb_VGC_06 : FB_VacuumValve;
+	fb_VGC_08 : FB_VacuumValve;
+	fb_VGC_09 : FB_VacuumValve;
+	fb_VGC_10 : FB_VacuumValve;
+	fb_VGC_11 : FB_VacuumValve;
 
 	
 	
@@ -37,7 +41,7 @@ VAR
 	fb_PIP_M1L_01	:	FB_GAM_PIP;
 	fb_PIP_03	:	FB_GAM_PIP;
 	
-	
+	fb_VGC_2S : FB_VacuumValve;
 END_VAR
 
 ]]></Declaration>
@@ -45,6 +49,12 @@ END_VAR
       <ST><![CDATA[OverridePressure();
 
 (*Valves*)
+
+fb_VGC_2S(stAVol:=stVl_Start , 
+	stBVol:= stVl_KMONO,
+	stValve:= VGC_2S
+	);
+
 
 fb_VGC_1(stAVol:=stVl_Start , 
 	stBVol:= stVl_KMONO,
@@ -87,7 +97,22 @@ fb_VGC_06(stAVol:= stVl_M1L0,
 	stBVol:= stVl_End,
 	stValve:= PMPS_VGC_06
 	);	
-	
+fb_VGC_08(stAVol:= stVl_M1L0, 
+	stBVol:= stVl_End,
+	stValve:= PMPS_VGC_08
+	);	
+fb_VGC_09(stAVol:= stVl_M1L0, 
+	stBVol:= stVl_End,
+	stValve:= PMPS_VGC_09
+	);	
+fb_VGC_10(stAVol:= stVl_M1L0, 
+	stBVol:= stVl_End,
+	stValve:= PMPS_VGC_10
+	);	
+fb_VGC_11(stAVol:= stVl_M1L0, 
+	stBVol:= stVl_End,
+	stValve:= PMPS_VGC_11
+	);	
 
 (*Gauges*)
 fbMKS500_VGCC_KMONO_01(stVolume := stVl_KMONO, stGauge := S_FEE_KMONO_GCC_01);
